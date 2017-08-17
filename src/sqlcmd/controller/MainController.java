@@ -28,7 +28,6 @@ public class MainController {
             catch (Exception e){
                 view.write("Неудача по причине:"+e.getMessage()+" "+e.getCause().getMessage());
                 view.write("Повтори попытку");
-
             }
         }
         view.write("Успех!");
