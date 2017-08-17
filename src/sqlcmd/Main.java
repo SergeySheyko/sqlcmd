@@ -1,6 +1,11 @@
 package sqlcmd;
 
 import sqlcmd.controller.CommandProcessor;
+import sqlcmd.controller.MainController;
+import sqlcmd.model.DatabaseManager;
+import sqlcmd.model.JDBCDatabaseManager;
+import sqlcmd.view.Console;
+import sqlcmd.view.View;
 
 
 /**
@@ -10,15 +15,10 @@ public class Main  {
 
     public static void main(String[] args) {
 
-        CommandProcessor processor = new CommandProcessor();
-        processor.run();
-
-
-//        if (!manager.connect("test","sa","arintt21")) {
-//            System.out.println("Can't connect to database!");
-//            return;
-//        }
-
+        View view = new Console();
+        DatabaseManager databaseManager = new JDBCDatabaseManager();
+        MainController mainController = new MainController(view,databaseManager);
+        mainController.run();
     }
 
 
