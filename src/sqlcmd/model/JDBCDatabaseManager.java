@@ -34,7 +34,14 @@ public class JDBCDatabaseManager implements DatabaseManager {
         }
     }
 
-    public Connection getConnection(){return connection;}
+    @Override
+    public void disconnect(){
+        if (connection!=null) try {
+            connection.close();
+        } catch (SQLException e) {
+            throw new RuntimeException("Error while disconnecting from database", e);
+        }
+    }
 
     @Override
     public void clear(String tableName) {
@@ -42,15 +49,16 @@ public class JDBCDatabaseManager implements DatabaseManager {
         int affectedRows = 0;
         try (PreparedStatement psmt = connection.prepareStatement(sql)){
             affectedRows = psmt.executeUpdate();
-            System.out.println(tableName+" was cleared. Deleted "+affectedRows+" rows");
+//            System.out.println(tableName+" was cleared. Deleted "+affectedRows+" rows");
         } catch (SQLException e) {
-            System.out.println("Can't clear table!");
-            e.printStackTrace();
+            throw new RuntimeException("Error while clearing the table "+tableName, e);
         }
     }
 
     @Override
     public String[] getTablesList() {
+        if (connection==null) throw new RuntimeException("Соединение с базой не установлено!");
+
         String sql = "SELECT table_name FROM information_schema.tables WHERE table_schema='public' AND table_type='BASE TABLE'";
         try (Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(sql);){
@@ -67,13 +75,6 @@ public class JDBCDatabaseManager implements DatabaseManager {
         }
     }
 
-    public void disconnect(){
-        if (connection!=null) try {
-            connection.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 
     @Override
     public void create(DataSet input, String tableName) {
@@ -155,12 +156,11 @@ public class JDBCDatabaseManager implements DatabaseManager {
     }
 
     public void dropTable(String tableName) {
-        if (connection==null) return;
         String sql = "DROP TABLE public."+tableName;
         try (PreparedStatement pstmt = connection.prepareStatement(sql);){
             pstmt.executeUpdate();
         }catch (SQLException e){
-            e.printStackTrace();
+            throw new RuntimeException("Error while deleting the table "+tableName, e);
         }
     }
 

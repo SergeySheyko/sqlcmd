@@ -1,9 +1,10 @@
 package sqlcmd.controller;
 
+import sqlcmd.model.DataSet;
 import sqlcmd.model.DatabaseManager;
-import sqlcmd.model.JDBCDatabaseManager;
-import sqlcmd.view.Console;
 import sqlcmd.view.View;
+
+import java.util.Arrays;
 
 /**
  * Created by s.sheyko on 15.08.2017.
@@ -19,25 +20,86 @@ public class MainController {
 
     public void run() {
         view.write("Hello, user!");
-        view.write("Введи, пожалуйста, имя базы данных, имя пользователя и пароль в формате: ИмяБазы|ИмяПользователя|Пароль");
         while (true){
             try {
-            String string = view.read();
-            String[] data = string.split("[|]");
-            if (data.length!=3){
-                throw new IllegalArgumentException("Неудача по причине: неверное количество параметров - требуется 3, обнаружено "+data.length);
-            }
-            String databaseName = data[0];
-            String userName = data[1];
-            String password = data[2];
-                databaseManager.connect(databaseName,userName,password);
-                break;
+                view.write("Введи команду или help для помощи:");
+                String commandLine = view.read();
+                String[] commands = commandLine.split("[|]");
+                if (commandLine.equals("exit")){
+                    databaseManager.disconnect();
+                    view.write("До свидания!");
+                    break;
+                }
+                else if (commandLine.equals("help")) writeHelp();
+                else if (commandLine.equals("tables")) getTables();
+                //else if (commands.length<2) view.write("Неверное количество параметров!");
+                else if (commands[0].equals("connect")) connectToDatabase(commands);
+                else if (commands[0].equals("clear")) clearTable(commands);
+                else if (commands[0].equals("drop")) dropTable(commands);
+                else if (commands[0].equals("create")) createTable(commands);
+                else if (commands[0].equals("find")) getTableData(commands);
+                else view.write("Неверная команда!");
             }
             catch (Exception e){
                 printError(e);
             }
         }
-        view.write("Успех!");
+
+    }
+
+    private void getTableData(String[] commands) {
+        checkArgsQty(commands,2);
+        DataSet[] dataSet = databaseManager.getTableData(commands[1]);
+        displayTableData(dataSet);
+    }
+
+    private void displayTableData(DataSet[] dataSet) {
+
+    }
+
+    private void createTable(String[] commands) {
+        String tablename;
+        String[] columns = new String[commands.length-2];
+        if (commands.length<3) throw new IllegalArgumentException("неверное количество параметров - требуется 3 и более, обнаружено "+commands.length);
+        tablename = commands[1];
+        int index = 0;
+        for (int i=2;i<commands.length;i++){
+            columns[index++] = commands[i];
+        }
+        databaseManager.createTable(tablename,columns);
+    }
+
+    private void dropTable(String[] commands) {
+        checkArgsQty(commands,2);
+        databaseManager.dropTable(commands[1]);
+    }
+
+    private void clearTable(String[] commands) {
+        checkArgsQty(commands,2);
+        databaseManager.clear(commands[1]);
+    }
+
+
+    private void getTables() {
+        view.write(Arrays.toString(databaseManager.getTablesList()));
+    }
+
+    private void writeHelp() {
+        //todo
+        view.write("Help:");
+    }
+
+    private void connectToDatabase(String[] commands) {
+        checkArgsQty(commands,4);
+        try {
+            String databaseName = commands[1];
+            String userName = commands[2];
+            String password = commands[3];
+            databaseManager.connect(databaseName,userName,password);
+        } catch (Exception e){
+            printError(e);
+        }
+        view.write("Соединение успешно!");
     }
 
     private void printError(Exception e) {
@@ -45,6 +107,9 @@ public class MainController {
         if (e.getCause()!=null) errorMessage+=" "+e.getCause().getMessage();
         view.write("Неудача по причине: "+errorMessage);
         view.write("Повтори попытку");
+    }
+    private void checkArgsQty(String[] commands, int qty) {
+        if (commands.length!=qty) throw new IllegalArgumentException("неверное количество параметров - требуется 2, обнаружено "+commands.length);
     }
 
 }

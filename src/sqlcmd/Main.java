@@ -1,6 +1,5 @@
 package sqlcmd;
 
-import sqlcmd.controller.CommandProcessor;
 import sqlcmd.controller.MainController;
 import sqlcmd.model.DatabaseManager;
 import sqlcmd.model.JDBCDatabaseManager;

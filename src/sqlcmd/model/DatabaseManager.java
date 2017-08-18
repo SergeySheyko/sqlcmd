@@ -10,6 +10,8 @@ public interface DatabaseManager {
 
     String[] getTablesList();
 
+    void disconnect();
+
     void create(DataSet input, String tableName);
 
     DataSet[] getTableData(String tableName);
