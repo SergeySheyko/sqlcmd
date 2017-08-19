@@ -2,8 +2,10 @@ package sqlcmd.controller;
 
 import sqlcmd.model.DataSet;
 import sqlcmd.model.DatabaseManager;
+import sqlcmd.model.newDataSet;
 import sqlcmd.view.View;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -38,6 +40,7 @@ public class MainController {
                 else if (commands[0].equals("drop")) dropTable(commands);
                 else if (commands[0].equals("create")) createTable(commands);
                 else if (commands[0].equals("find")) getTableData(commands);
+                else if (commands[0].equals("insert")) insertData(commands);
                 else view.write("Неверная команда!");
             }
             catch (Exception e){
@@ -47,14 +50,51 @@ public class MainController {
 
     }
 
+    private void insertData(String[] commands) {
+        if (commands.length<4) throw new IllegalArgumentException("неверное количество параметров - требуется 4 и более, обнаружено "+commands.length);
+        String[] columns = new String[(commands.length-2)/2];
+        String[] values = new String[(commands.length-2)/2];
+        int columnsIndex = 0;
+        int valuesIndex = 0;
+        for (int i=2;i<commands.length;i++){
+            if (i%2==0) columns[] = commands[i];
+            else
+        }
+    }
+
     private void getTableData(String[] commands) {
         checkArgsQty(commands,2);
-        DataSet[] dataSet = databaseManager.getTableData(commands[1]);
+        newDataSet dataSet = databaseManager.getTableData(commands[1]);
         displayTableData(dataSet);
     }
 
-    private void displayTableData(DataSet[] dataSet) {
-
+    private void displayTableData(newDataSet dataSet) {
+        String[] columns = dataSet.getColumns();
+        ArrayList<Object[]> rows = dataSet.getRows();
+        String delimiterRow = "+";
+        String formatLine = "|";
+        for (int i=0;i<columns.length;i++){
+            int maxLen =columns[i].length();
+            if (rows!=null){
+                for (Object[] row:rows){
+                    if (row[i].toString().length()>maxLen) maxLen =row[i].toString().length();
+                }
+            }
+            formatLine += " %-"+maxLen+"s |";
+            delimiterRow += "-";
+            for (int j=0;j<maxLen;j++) delimiterRow += "-";
+            delimiterRow += "-+";
+        }
+        System.out.println(delimiterRow);
+        System.out.format(formatLine,columns);
+        System.out.println();
+        System.out.println(delimiterRow);
+        if (rows==null) return;
+        for (Object[] row:rows){
+            System.out.format(formatLine,row);
+            System.out.println();
+            System.out.println(delimiterRow);
+        }
     }
 
     private void createTable(String[] commands) {

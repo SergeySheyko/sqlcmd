@@ -58,7 +58,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
     @Override
     public String[] getTablesList() {
         if (connection==null) throw new RuntimeException("Соединение с базой не установлено!");
-
+        //todo: realize using collections
         String sql = "SELECT table_name FROM information_schema.tables WHERE table_schema='public' AND table_type='BASE TABLE'";
         try (Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(sql);){
@@ -77,14 +77,14 @@ public class JDBCDatabaseManager implements DatabaseManager {
 
 
     @Override
-    public void create(DataSet input, String tableName) {
+    public int insert(DataSet input, String tableName) {
         String[] names = input.getNames();
         Object[] values = input.getValues();
         String sql = "Insert into public."+tableName+" ("+getPreparedNames(names)+") VALUES ("+getPreparedValues(values)+")";
         try (Statement stmt = connection.createStatement();){
-            stmt.executeUpdate(sql);
+            return stmt.executeUpdate(sql);
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Error while inserting data!",e);
         }
     }
 
@@ -101,38 +101,27 @@ public class JDBCDatabaseManager implements DatabaseManager {
     }
 
     @Override
-    public DataSet[] getTableData(String tableName) {
-        if (connection==null) return new DataSet[0];
-        int size = getSize(tableName);
-        DataSet[] data = new DataSet[size];
-        int index=0;
+    public newDataSet getTableData(String tableName) {
+        if (connection==null) throw new RuntimeException("Connection is not established!");
+        newDataSet data = null;
         String sql = "SELECT * FROM public."+tableName;
         try (Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery(sql);) {
+            ResultSet rs = stmt.executeQuery(sql);) {
+            ResultSetMetaData rsmd = rs.getMetaData();
+            String[] columns = new String[rsmd.getColumnCount()];
+//            int index=0;
+            for (int i=1;i<=columns.length;i++) columns[i-1] = rsmd.getColumnName(i);
+            data = new newDataSet(columns);
             while (rs.next()) {
-                ResultSetMetaData rsmd = rs.getMetaData();
-                DataSet dataSet = new DataSet();
-                data[index++] = dataSet;
-                for (int i = 1; i <= rsmd.getColumnCount(); i++) {
-                    dataSet.put(rsmd.getColumnName(i), rs.getObject(i));
-                }
+                Object[] row = new Object[columns.length];
+                for (int i=1;i<=columns.length;i++) {
+                    row[i-1] = rs.getObject(i);}
+                data.addRow(row);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Error in SELECT operation!",e);
         }
         return data;
-    }
-
-    private int getSize(String tableName) {
-        String sql = "SELECT COUNT (*) FROM "+tableName;
-        try (Statement stmt = connection.createStatement();){
-            ResultSet rs = stmt.executeQuery(sql);
-            rs.next();
-            return rs.getInt(1);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return 0;
     }
 
     @Override

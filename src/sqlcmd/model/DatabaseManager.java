@@ -12,9 +12,9 @@ public interface DatabaseManager {
 
     void disconnect();
 
-    void create(DataSet input, String tableName);
+    int insert(DataSet input, String tableName);
 
-    DataSet[] getTableData(String tableName);
+    newDataSet getTableData(String tableName);
 
     void update(String tableName, int id, DataSet newValue);
 
