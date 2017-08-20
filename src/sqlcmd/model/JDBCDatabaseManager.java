@@ -44,14 +44,17 @@ public class JDBCDatabaseManager implements DatabaseManager {
     }
 
     @Override
-    public void clear(String tableName) {
+    public void delete(String tableName,String column,String value){
         String sql = "DELETE FROM public."+tableName;
-        int affectedRows = 0;
-        try (PreparedStatement psmt = connection.prepareStatement(sql)){
-            affectedRows = psmt.executeUpdate();
-//            System.out.println(tableName+" was cleared. Deleted "+affectedRows+" rows");
+        if (column!=null) sql += " WHERE "+column+"=?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)){
+            if (column!=null){
+                if (column.equals("id")) pstmt.setInt(1,Integer.parseInt(value));
+                else pstmt.setString(1,value);
+            }
+            pstmt.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException("Error while clearing the table "+tableName, e);
+            throw new RuntimeException("Error while deleting from a table "+tableName, e);
         }
     }
 
@@ -77,10 +80,8 @@ public class JDBCDatabaseManager implements DatabaseManager {
 
 
     @Override
-    public int insert(DataSet input, String tableName) {
-        String[] names = input.getNames();
-        Object[] values = input.getValues();
-        String sql = "Insert into public."+tableName+" ("+getPreparedNames(names)+") VALUES ("+getPreparedValues(values)+")";
+    public int insert(String[] columns, String[] values, String tableName) {
+        String sql = "Insert into public."+tableName+" ("+getPreparedNames(columns)+") VALUES ("+getPreparedValues(values)+")";
         try (Statement stmt = connection.createStatement();){
             return stmt.executeUpdate(sql);
         } catch (SQLException e) {
@@ -101,9 +102,9 @@ public class JDBCDatabaseManager implements DatabaseManager {
     }
 
     @Override
-    public newDataSet getTableData(String tableName) {
+    public DataSet getTableData(String tableName) {
         if (connection==null) throw new RuntimeException("Connection is not established!");
-        newDataSet data = null;
+        DataSet data = null;
         String sql = "SELECT * FROM public."+tableName;
         try (Statement stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery(sql);) {
@@ -111,7 +112,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
             String[] columns = new String[rsmd.getColumnCount()];
 //            int index=0;
             for (int i=1;i<=columns.length;i++) columns[i-1] = rsmd.getColumnName(i);
-            data = new newDataSet(columns);
+            data = new DataSet(columns);
             while (rs.next()) {
                 Object[] row = new Object[columns.length];
                 for (int i=1;i<=columns.length;i++) {
@@ -125,22 +126,21 @@ public class JDBCDatabaseManager implements DatabaseManager {
     }
 
     @Override
-    public void update(String tableName, int id, DataSet newValue) {
-        String[] names = newValue.getNames();
-        Object[] values = newValue.getValues();
+    public void update(String tableName, String checkedColumn, String checkedValue, String[] updatedColumns, String[] updatedValues) {
         String sql = "Update public."+tableName+" Set ";
-        for (int i=0;i<names.length;i++){
-            sql += names[i]+" = ?,";
+        for (int i=0;i<updatedColumns.length;i++){
+            sql += updatedColumns[i]+" = ?,";
         }
-        sql = sql.substring(0,sql.length()-1)+" Where id=?";
+        sql = sql.substring(0,sql.length()-1)+" Where "+checkedColumn+"=?";
         try (PreparedStatement psmt = connection.prepareStatement(sql);){
-            for (int i=0;i<values.length;i++){
-                psmt.setString(i+1,values[i].toString());
+            for (int i=0;i<updatedValues.length;i++){
+                psmt.setString(i+1,updatedValues[i]);
             }
-            psmt.setInt(values.length+1,id);
+            if (checkedColumn.equals("id")) psmt.setInt(updatedValues.length+1,Integer.parseInt(checkedValue));
+            else psmt.setString(updatedValues.length+1,checkedValue);
             psmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Error while operating update statement!",e);
         }
     }
 
@@ -184,4 +184,5 @@ public class JDBCDatabaseManager implements DatabaseManager {
             return new String[0];
         }
     }
+
 }

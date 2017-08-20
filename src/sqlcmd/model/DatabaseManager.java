@@ -6,17 +6,17 @@ package sqlcmd.model;
 public interface DatabaseManager {
     void connect(String databaseName, String userName, String password);
 
-    void clear(String tableName);
+    void delete(String tableName,String column,String value);
 
     String[] getTablesList();
 
     void disconnect();
 
-    int insert(DataSet input, String tableName);
+    int insert(String[] columns, String[] values, String tableName);
 
-    newDataSet getTableData(String tableName);
+    DataSet getTableData(String tableName);
 
-    void update(String tableName, int id, DataSet newValue);
+    void update(String tableName, String checkedColumn, String checkedValue, String[] updatedColumns, String[] updatedValues);
 
     void createTable(String tableName, String[] columns);
 

@@ -1,8 +1,7 @@
 package sqlcmd.controller;
 
-import sqlcmd.model.DataSet;
 import sqlcmd.model.DatabaseManager;
-import sqlcmd.model.newDataSet;
+import sqlcmd.model.DataSet;
 import sqlcmd.view.View;
 
 import java.util.ArrayList;
@@ -34,13 +33,14 @@ public class MainController {
                 }
                 else if (commandLine.equals("help")) writeHelp();
                 else if (commandLine.equals("tables")) getTables();
-                //else if (commands.length<2) view.write("Неверное количество параметров!");
                 else if (commands[0].equals("connect")) connectToDatabase(commands);
                 else if (commands[0].equals("clear")) clearTable(commands);
                 else if (commands[0].equals("drop")) dropTable(commands);
                 else if (commands[0].equals("create")) createTable(commands);
                 else if (commands[0].equals("find")) getTableData(commands);
                 else if (commands[0].equals("insert")) insertData(commands);
+                else if (commands[0].equals("update")) updateData(commands);
+                else if (commands[0].equals("delete")) deleteData(commands);
                 else view.write("Неверная команда!");
             }
             catch (Exception e){
@@ -50,25 +50,55 @@ public class MainController {
 
     }
 
+    private void deleteData(String[] commands) {
+        checkArgsQty(commands,4);
+        String tableName = commands[1];
+        String checkedColumn = commands[2];
+        String checkedValue = commands[3];
+        databaseManager.delete(tableName,checkedColumn,checkedValue);
+        getTableData(Arrays.copyOf(commands,2));
+    }
+
+    private void updateData(String[] commands) {
+        if (commands.length<6) throw new IllegalArgumentException("неверное количество параметров - требуется 6 и более, обнаружено "+commands.length);
+        if (commands.length%2!=0) throw new IllegalArgumentException("неверное количество параметров - требуется четное количество!");
+        String tableName = commands[1];
+        String checkedColumn = commands[2];
+        String checkedValue = commands[3];
+        String[] columns = new String[(commands.length-4)/2];
+        String[] values = new String[(commands.length-4)/2];
+        int columnsIndex = 0;
+        int valuesIndex = 0;
+        for (int i=4;i<commands.length;i++){
+            if (i%2==0) columns[columnsIndex++] = commands[i];
+            else values[valuesIndex++] = commands[i];
+        }
+        databaseManager.update(tableName,checkedColumn,checkedValue,columns,values);
+        getTableData(Arrays.copyOf(commands,2));
+    }
+
     private void insertData(String[] commands) {
         if (commands.length<4) throw new IllegalArgumentException("неверное количество параметров - требуется 4 и более, обнаружено "+commands.length);
+        if (commands.length%2!=0) throw new IllegalArgumentException("неверное количество параметров - требуется четное количество!");
+        String tableName = commands[1];
         String[] columns = new String[(commands.length-2)/2];
         String[] values = new String[(commands.length-2)/2];
         int columnsIndex = 0;
         int valuesIndex = 0;
         for (int i=2;i<commands.length;i++){
-            if (i%2==0) columns[] = commands[i];
-            else
+            if (i%2==0) columns[columnsIndex++] = commands[i];
+            else values[valuesIndex++] = commands[i];
         }
+        view.write("добавлено "+databaseManager.insert(columns,values, tableName)+" строк");
     }
 
     private void getTableData(String[] commands) {
         checkArgsQty(commands,2);
-        newDataSet dataSet = databaseManager.getTableData(commands[1]);
+        DataSet dataSet = databaseManager.getTableData(commands[1]);
         displayTableData(dataSet);
     }
 
-    private void displayTableData(newDataSet dataSet) {
+    private void displayTableData(DataSet dataSet) {
         String[] columns = dataSet.getColumns();
         ArrayList<Object[]> rows = dataSet.getRows();
         String delimiterRow = "+";
@@ -116,7 +146,7 @@ public class MainController {
 
     private void clearTable(String[] commands) {
         checkArgsQty(commands,2);
-        databaseManager.clear(commands[1]);
+        databaseManager.delete(commands[1],null,null);
     }
 
 

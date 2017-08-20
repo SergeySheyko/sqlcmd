@@ -1,54 +1,32 @@
 package sqlcmd.model;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 
 /**
- * Created by s.sheyko on 01.08.2017.
+ * Created by s.sheyko on 19.08.2017.
  */
 public class DataSet {
-    static class Data{
-        private String name;
-        private Object value;
+    private String[] columns;
+    private ArrayList<Object[]> rows= new ArrayList<Object[]>();
 
-        public Data(String name, Object value) {
-            this.name = name;
-            this.value = value;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public Object getValue() {
-            return value;
-        }
-    }
-    public Data[] data = new Data[100];
-    private int index = 0;
-
-    public void put(String name,Object value){
-        data[index++] = new Data(name, value);
-    }
-    public Object[] getValues(){
-        Object[] result = new Object[index];
-        for (int i=0;i<index;i++){
-            result[i] = data[i].getValue();
-        }
-        return result;
+    public DataSet(String[] columns) {
+        this.columns = columns;
     }
 
-    public String[] getNames(){
-        String[] result = new String[index];
-        for (int i=0;i<index;i++){
-            result[i] = data[i].getName();
-        }
-        return result;
+    public String[] getColumns() {
+        return columns;
     }
 
-    @Override
-    public String toString() {
-        return "DataSet{\n"+
-                "names:"+ Arrays.toString(getNames())+"\n"+
-                "values:"+Arrays.toString(getValues())+"\n}";
+    public ArrayList<Object[]> getRows() {
+        return rows;
+    }
+
+    public void addRow(Object[] values){
+        if (values==null || columns==null || values.length!=columns.length) return;
+        int index = 0;
+        Object[] row = new Object[columns.length];
+        for (Object value:values) row[index++] = value;
+        rows.add(row);
     }
 }
+

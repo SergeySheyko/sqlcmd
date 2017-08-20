@@ -2,7 +2,6 @@ import org.junit.Before;
 import org.junit.Test;
 import sqlcmd.model.JDBCDatabaseManager;
 import sqlcmd.model.DatabaseManager;
-import sqlcmd.model.DataSet;
 
 import java.util.Arrays;
 
@@ -41,12 +40,12 @@ public class TestJDBCDatabaseManager {
 
     @Test
     public void testGetTableData(){
-        manager.clear("user");
-        DataSet input = new DataSet();
-        input.put("id","13");
-        input.put("name","Stiven");
-        input.put("password","pass");
-        manager.insert(input,"user");
+//        manager.clear("user");
+//        DataSet input = new DataSet();
+//        input.put("id","13");
+//        input.put("name","Stiven");
+//        input.put("password","pass");
+//        manager.insert(input,"user");
 
 //        DataSet[] users = manager.getTableData("user");
 //        assertEquals(1,users.length);
@@ -64,18 +63,18 @@ public class TestJDBCDatabaseManager {
 
     @Test
     public void testUpdateTableData(){
-        manager.clear("user");
-
-        DataSet input = new DataSet();
-        input.put("id","13");
-        input.put("name","Stiven");
-        input.put("password","pass");
-        manager.insert(input,"user");
-
-        DataSet newValue = new DataSet();
-        newValue.put("name","Stiv");
-        newValue.put("password","pass2");
-        manager.update("user",13,newValue);
+//        manager.clear("user");
+//
+//        DataSet input = new DataSet();
+//        input.put("id","13");
+//        input.put("name","Stiven");
+//        input.put("password","pass");
+//        manager.insert(input,"user");
+//
+//        DataSet newValue = new DataSet();
+//        newValue.put("name","Stiv");
+//        newValue.put("password","pass2");
+//        manager.update("user",13,newValue);
 
 //        DataSet[] users = manager.getTableData("user");
 //        assertEquals(1,users.length);
