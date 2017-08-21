@@ -61,23 +61,18 @@ public class JDBCDatabaseManager implements DatabaseManager {
     @Override
     public String[] getTablesList() {
         if (connection==null) throw new RuntimeException("Соединение с базой не установлено!");
-        //todo: realize using collections
         String sql = "SELECT table_name FROM information_schema.tables WHERE table_schema='public' AND table_type='BASE TABLE'";
         try (Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery(sql);){
-            String[] tables = new String[100];
-            int index = 0;
+            ResultSet rs = stmt.executeQuery(sql);){
+            ArrayList<String> tables = new ArrayList<>();
             while (rs.next()){
-                tables[index++] =rs.getString("table_name");
+                tables.add(rs.getString("table_name"));
             }
-            tables = Arrays.copyOf(tables,index,String[].class);
-            return tables;
+            return tables.toArray(new String[tables.size()]);
         }catch (SQLException e){
-            e.printStackTrace();
-            return new String[0];
+            throw new RuntimeException("Error while getting tables list!",e);
         }
     }
-
 
     @Override
     public int insert(String[] columns, String[] values, String tableName) {
@@ -110,7 +105,6 @@ public class JDBCDatabaseManager implements DatabaseManager {
             ResultSet rs = stmt.executeQuery(sql);) {
             ResultSetMetaData rsmd = rs.getMetaData();
             String[] columns = new String[rsmd.getColumnCount()];
-//            int index=0;
             for (int i=1;i<=columns.length;i++) columns[i-1] = rsmd.getColumnName(i);
             data = new DataSet(columns);
             while (rs.next()) {
@@ -166,22 +160,6 @@ public class JDBCDatabaseManager implements DatabaseManager {
             pstmt.executeUpdate();
         }catch (SQLException e){
             e.printStackTrace();
-        }
-    }
-
-    public String[] getColumnNames(String tableName) {
-        List<String> names = new ArrayList<>();
-        String sql = "SELECT * FROM public."+tableName;
-        try (Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery(sql);){
-            ResultSetMetaData metaData = rs.getMetaData();
-            for (int i=1;i<=metaData.getColumnCount();i++){
-                names.add(metaData.getColumnName(i));
-            }
-            return names.toArray(new String[names.size()]);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return new String[0];
         }
     }
 

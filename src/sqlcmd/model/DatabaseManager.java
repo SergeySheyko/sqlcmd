@@ -22,5 +22,4 @@ public interface DatabaseManager {
 
     void dropTable(String tableName);
 
-    String[] getColumnNames(String tableName);
 }

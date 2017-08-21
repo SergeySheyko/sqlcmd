@@ -51,7 +51,7 @@ public class MainController {
     }
 
     private void deleteData(String[] commands) {
-        checkArgsQty(commands,4);
+        checkArgsQty(commands,4,false);
         String tableName = commands[1];
         String checkedColumn = commands[2];
         String checkedValue = commands[3];
@@ -60,7 +60,7 @@ public class MainController {
     }
 
     private void updateData(String[] commands) {
-        if (commands.length<6) throw new IllegalArgumentException("неверное количество параметров - требуется 6 и более, обнаружено "+commands.length);
+        checkArgsQty(commands,6,true);
         if (commands.length%2!=0) throw new IllegalArgumentException("неверное количество параметров - требуется четное количество!");
         String tableName = commands[1];
         String checkedColumn = commands[2];
@@ -78,7 +78,7 @@ public class MainController {
     }
 
     private void insertData(String[] commands) {
-        if (commands.length<4) throw new IllegalArgumentException("неверное количество параметров - требуется 4 и более, обнаружено "+commands.length);
+        checkArgsQty(commands,4,true);
         if (commands.length%2!=0) throw new IllegalArgumentException("неверное количество параметров - требуется четное количество!");
         String tableName = commands[1];
         String[] columns = new String[(commands.length-2)/2];
@@ -93,7 +93,7 @@ public class MainController {
     }
 
     private void getTableData(String[] commands) {
-        checkArgsQty(commands,2);
+        checkArgsQty(commands,2,false);
         DataSet dataSet = databaseManager.getTableData(commands[1]);
         displayTableData(dataSet);
     }
@@ -130,7 +130,7 @@ public class MainController {
     private void createTable(String[] commands) {
         String tablename;
         String[] columns = new String[commands.length-2];
-        if (commands.length<3) throw new IllegalArgumentException("неверное количество параметров - требуется 3 и более, обнаружено "+commands.length);
+        checkArgsQty(commands,3,true);
         tablename = commands[1];
         int index = 0;
         for (int i=2;i<commands.length;i++){
@@ -140,12 +140,12 @@ public class MainController {
     }
 
     private void dropTable(String[] commands) {
-        checkArgsQty(commands,2);
+        checkArgsQty(commands,2,false);
         databaseManager.dropTable(commands[1]);
     }
 
     private void clearTable(String[] commands) {
-        checkArgsQty(commands,2);
+        checkArgsQty(commands,2,false);
         databaseManager.delete(commands[1],null,null);
     }
 
@@ -160,7 +160,7 @@ public class MainController {
     }
 
     private void connectToDatabase(String[] commands) {
-        checkArgsQty(commands,4);
+        checkArgsQty(commands,4,false);
         try {
             String databaseName = commands[1];
             String userName = commands[2];
@@ -178,8 +178,10 @@ public class MainController {
         view.write("Неудача по причине: "+errorMessage);
         view.write("Повтори попытку");
     }
-    private void checkArgsQty(String[] commands, int qty) {
-        if (commands.length!=qty) throw new IllegalArgumentException("неверное количество параметров - требуется 2, обнаружено "+commands.length);
+
+    private void checkArgsQty(String[] commands, int qty, boolean equalOrMore) {
+        String moreThan = equalOrMore?" и более":"";
+        if (commands.length!=qty) throw new IllegalArgumentException(String.format("неверное количество параметров - требуется %d%s, обнаружено %d",qty,moreThan,commands.length));
     }
 
 }
