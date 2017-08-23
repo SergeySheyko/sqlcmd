@@ -6,13 +6,17 @@ import sqlcmd.view.View;
 /**
  * Created by s.sheyko on 22.08.2017.
  */
-public class Drop extends CommonCommand{
-    public Drop(String[] commands, View view, DatabaseManager databaseManager) {
-        super(commands, view, databaseManager);
+public class Drop implements Command{
+    private View view;
+    private DatabaseManager databaseManager;
+
+    public Drop(View view, DatabaseManager databaseManager) {
+        this.view = view;
+        this.databaseManager = databaseManager;
     }
 
     @Override
-    public void run() {
+    public void run(String[] commands) {
         checkArgsQty(commands,2,false);
         databaseManager.dropTable(commands[1]);
     }

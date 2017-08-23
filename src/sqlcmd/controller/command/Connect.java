@@ -6,14 +6,17 @@ import sqlcmd.view.View;
 /**
  * Created by s.sheyko on 22.08.2017.
  */
-public class Connect extends CommonCommand{
+public class Connect implements Command{
+    private View view;
+    private DatabaseManager databaseManager;
 
-    public Connect(String[] commands, View view, DatabaseManager databaseManager) {
-        super(commands, view, databaseManager);
+    public Connect(View view, DatabaseManager databaseManager) {
+        this.view = view;
+        this.databaseManager = databaseManager;
     }
 
     @Override
-    public void run() {
+    public void run(String[] commands) {
         checkArgsQty(commands,4,false);
         try {
             String databaseName = commands[1];

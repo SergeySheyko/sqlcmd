@@ -1,10 +1,9 @@
 package sqlcmd.controller;
 
-import sqlcmd.controller.command.CommonCommand;
+import sqlcmd.controller.command.Command;
 import sqlcmd.model.DatabaseManager;
 import sqlcmd.view.View;
 
-import java.lang.reflect.Constructor;
 import java.util.Map;
 
 /**
@@ -13,12 +12,12 @@ import java.util.Map;
 public class MainController {
     private View view;
     private DatabaseManager databaseManager;
-    private final Map<String,Class<?>> commandTypes;
+    private Map<String, Command> commandMap;
 
-    public MainController(View view, DatabaseManager databaseManager) {
+    public MainController(View view, DatabaseManager databaseManager, Map<String, Command> commandMap) {
         this.view = view;
         this.databaseManager = databaseManager;
-        this.commandTypes = CommonCommand.getCommandTypes();
+        this.commandMap = commandMap;
     }
 
     public void run() {
@@ -32,11 +31,9 @@ public class MainController {
                     commands = new String[1];
                     commands[0] = commandLine;
                 }
-                if (commandTypes.containsKey(commands[0])){
-                    Class<?> command = commandTypes.get(commands[0]);
-                    Constructor<?> constructor = command.getConstructor(String[].class,View.class,DatabaseManager.class);
-                    CommonCommand instance = (CommonCommand) constructor.newInstance(commands,view,databaseManager);
-                    instance.run();
+                if (commandMap.containsKey(commands[0])){
+                    Command command = commandMap.get(commands[0]);
+                    command.run(commands);
                 }
                 else view.write("Неверная команда!");
             }

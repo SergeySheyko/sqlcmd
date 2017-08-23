@@ -6,13 +6,17 @@ import sqlcmd.view.View;
 /**
  * Created by s.sheyko on 22.08.2017.
  */
-public class Insert extends CommonCommand{
-    public Insert(String[] commands, View view, DatabaseManager databaseManager) {
-        super(commands, view, databaseManager);
+public class Insert implements Command{
+    private View view;
+    private DatabaseManager databaseManager;
+
+    public Insert(View view, DatabaseManager databaseManager) {
+        this.view = view;
+        this.databaseManager = databaseManager;
     }
 
     @Override
-    public void run() {
+    public void run(String[] commands) {
         checkArgsQty(commands,4,true);
         if (commands.length%2!=0) throw new IllegalArgumentException("неверное количество параметров - требуется четное количество!");
         String tableName = commands[1];

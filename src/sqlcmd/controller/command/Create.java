@@ -6,13 +6,18 @@ import sqlcmd.view.View;
 /**
  * Created by s.sheyko on 22.08.2017.
  */
-public class Create extends CommonCommand{
-    public Create(String[] commands, View view, DatabaseManager databaseManager) {
-        super(commands, view, databaseManager);
+public class Create implements Command{
+    private View view;
+    private DatabaseManager databaseManager;
+
+    public Create(View view, DatabaseManager databaseManager) {
+        this.view = view;
+        this.databaseManager = databaseManager;
     }
 
+
     @Override
-    public void run() {
+    public void run(String[] commands) {
         checkArgsQty(commands,3,true);
         String tablename;
         String[] columns = new String[commands.length-2];

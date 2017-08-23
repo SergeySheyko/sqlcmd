@@ -6,14 +6,15 @@ import sqlcmd.view.View;
 /**
  * Created by s.sheyko on 22.08.2017.
  */
-public class Help extends CommonCommand {
+public class Help implements Command {
+    private View view;
 
-    public Help(String[] commands, View view, DatabaseManager databaseManager) {
-        super(commands, view, databaseManager);
+    public Help(View view) {
+        this.view = view;
     }
 
     @Override
-    public void run() {
+    public void run(String[] commands) {
         view.write("Доступны следующие команды:");
         view.write("сonnect - подключение к БД");
         view.write("\t формат: connect|database|username|password");

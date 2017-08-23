@@ -9,13 +9,17 @@ import java.util.Arrays;
 /**
  * Created by s.sheyko on 22.08.2017.
  */
-public class Update extends CommonCommand{
-    public Update(String[] commands, View view, DatabaseManager databaseManager) {
-        super(commands, view, databaseManager);
+public class Update implements Command{
+    private View view;
+    private DatabaseManager databaseManager;
+
+    public Update(View view, DatabaseManager databaseManager) {
+        this.view = view;
+        this.databaseManager = databaseManager;
     }
 
     @Override
-    public void run() {
+    public void run(String[] commands) {
         checkArgsQty(commands,6,true);
         if (commands.length%2!=0) throw new IllegalArgumentException("неверное количество параметров - требуется четное количество!");
         String tableName = commands[1];
@@ -31,6 +35,6 @@ public class Update extends CommonCommand{
         }
         databaseManager.update(tableName,checkedColumn,checkedValue,columns,values);
         DataSet dataSet = databaseManager.getTableData(tableName);
-        displayTableData(dataSet);
+        displayTableData(dataSet,view);
     }
 }

@@ -6,14 +6,21 @@ import sqlcmd.view.View;
 /**
  * Created by s.sheyko on 22.08.2017.
  */
-public class Clear extends CommonCommand{
-    public Clear(String[] commands, View view, DatabaseManager databaseManager) {
-        super(commands, view, databaseManager);
+public class Clear implements Command{
+    private View view;
+    private DatabaseManager databaseManager;
+
+    public Clear(View view, DatabaseManager databaseManager) {
+        this.view = view;
+        this.databaseManager = databaseManager;
     }
 
+
     @Override
-    public void run() {
+    public void run(String[] commands) {
         checkArgsQty(commands,2,false);
-        databaseManager.delete(commands[1],null,null);
+        String tableName = commands[1];
+        databaseManager.delete(tableName,null,null);
+        view.write("Таблица "+tableName+" успешно очищена.");
     }
 }

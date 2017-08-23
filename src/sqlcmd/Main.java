@@ -1,10 +1,14 @@
 package sqlcmd;
 
 import sqlcmd.controller.MainController;
+import sqlcmd.controller.command.*;
 import sqlcmd.model.DatabaseManager;
 import sqlcmd.model.JDBCDatabaseManager;
 import sqlcmd.view.Console;
 import sqlcmd.view.View;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -16,7 +20,20 @@ public class Main  {
 
         View view = new Console();
         DatabaseManager databaseManager = new JDBCDatabaseManager();
-        MainController mainController = new MainController(view,databaseManager);
+        Map<String,Command> commandMap = new HashMap<>();
+        commandMap.put("connect",new Connect(view,databaseManager));
+        commandMap.put("tables",new Tables(view,databaseManager));
+        commandMap.put("clear",new Clear(view,databaseManager));
+        commandMap.put("drop",new Drop(view,databaseManager));
+        commandMap.put("create",new Create(view,databaseManager));
+        commandMap.put("find",new Find(view,databaseManager));
+        commandMap.put("insert",new Insert(view,databaseManager));
+        commandMap.put("update",new Update(view,databaseManager));
+        commandMap.put("delete",new Delete(view,databaseManager));
+        commandMap.put("help",new Help(view));
+        commandMap.put("exit",new Exit(view,databaseManager));
+
+        MainController mainController = new MainController(view,databaseManager,commandMap);
         mainController.run();
     }
 

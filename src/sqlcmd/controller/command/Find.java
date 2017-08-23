@@ -7,16 +7,20 @@ import sqlcmd.view.View;
 /**
  * Created by s.sheyko on 22.08.2017.
  */
-public class Find extends CommonCommand{
-    public Find(String[] commands, View view, DatabaseManager databaseManager) {
-        super(commands, view, databaseManager);
+public class Find implements Command{
+    private View view;
+    private DatabaseManager databaseManager;
+
+    public Find(View view, DatabaseManager databaseManager) {
+        this.view = view;
+        this.databaseManager = databaseManager;
     }
 
     @Override
-    public void run() {
+    public void run(String[] commands) {
         checkArgsQty(commands,2,false);
         DataSet dataSet = databaseManager.getTableData(commands[1]);
-        displayTableData(dataSet);
+        displayTableData(dataSet,view);
 
     }
 }
