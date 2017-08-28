@@ -16,7 +16,7 @@ public class TestDataBaseManager {
     @Before
     public void setup(){
         manager = new JDBCDatabaseManager();
-        manager.connect("sqlcmd","postgres","aassa");
+        manager.connect("sqlcmd","postgres","postgres");
     }
 
     @Test
