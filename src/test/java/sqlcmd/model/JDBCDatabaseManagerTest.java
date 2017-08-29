@@ -1,8 +1,11 @@
+package java.sqlcmd.model;
+
 import org.junit.Before;
 import org.junit.Test;
 import sqlcmd.model.JDBCDatabaseManager;
 import sqlcmd.model.DatabaseManager;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
@@ -21,8 +24,8 @@ public class JDBCDatabaseManagerTest {
 
     @Test
     public void testGetTableNames(){
-        String[] tableNames = manager.getTablesList();
-        assertEquals("[user]",Arrays.toString(tableNames));
+        ArrayList<String> tableNames = manager.getTablesList();
+        assertEquals("[user]",tableNames.toString());
     }
 
     @Test

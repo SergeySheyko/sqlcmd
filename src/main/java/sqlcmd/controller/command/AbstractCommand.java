@@ -48,7 +48,7 @@ public abstract class AbstractCommand {
             delimiterRow += "-+";
         }
         view.write(delimiterRow);
-        view.write(String.format(formatLine, columns));
+        view.write(String.format(formatLine, (Object[]) columns));
         view.write(delimiterRow);
         if (rows == null) return;
         for (Object[] row : rows) {
