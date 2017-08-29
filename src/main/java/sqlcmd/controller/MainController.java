@@ -1,7 +1,6 @@
 package sqlcmd.controller;
 
 import sqlcmd.controller.command.Command;
-import sqlcmd.model.DatabaseManager;
 import sqlcmd.view.View;
 
 import java.util.Map;
@@ -11,26 +10,20 @@ import java.util.Map;
  */
 public class MainController {
     private View view;
-    private DatabaseManager databaseManager;
     private Map<String, Command> commandMap;
 
-    public MainController(View view, DatabaseManager databaseManager, Map<String, Command> commandMap) {
+    public MainController(View view, Map<String, Command> commandMap) {
         this.view = view;
-        this.databaseManager = databaseManager;
         this.commandMap = commandMap;
     }
 
     public void run() {
-        view.write("Hello, user!");
+        view.write("Привет!");
         while (true){
             try {
                 view.write("Введи команду или help для помощи:");
                 String commandLine = view.read();
-                String[] commands = commandLine.split("[|]");
-                if (commands.length==0) {
-                    commands = new String[1];
-                    commands[0] = commandLine;
-                }
+                String[] commands = getPreparedCommands(commandLine);
                 if (commandMap.containsKey(commands[0])){
                     Command command = commandMap.get(commands[0]);
                     command.run(commands);
@@ -42,6 +35,15 @@ public class MainController {
             }
         }
 
+    }
+
+    private String[] getPreparedCommands(String commandLine) {
+        String[] result = commandLine.split("[|]");
+        if (result.length==0) {
+            result = new String[1];
+            result[0] = commandLine;
+        }
+        return result;
     }
 
     public void printError(Exception e) {

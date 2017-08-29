@@ -6,11 +6,10 @@ import sqlcmd.view.View;
 /**
  * Created by s.sheyko on 22.08.2017.
  */
-public class Help implements Command {
-    private View view;
+public class Help extends AbstractCommand implements Command {
 
-    public Help(View view) {
-        this.view = view;
+    public Help(View view, DatabaseManager databaseManager) {
+        super(view, databaseManager);
     }
 
     @Override

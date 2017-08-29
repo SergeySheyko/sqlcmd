@@ -1,14 +1,13 @@
 package sqlcmd.model;
 
-/**
- * Created by ser on 14.08.2017.
- */
+import java.util.ArrayList;
+
 public interface DatabaseManager {
     void connect(String databaseName, String userName, String password);
 
     void delete(String tableName,String column,String value);
 
-    String[] getTablesList();
+    ArrayList<String> getTablesList();
 
     void disconnect();
 

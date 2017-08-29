@@ -9,20 +9,17 @@ import java.util.Arrays;
 /**
  * Created by s.sheyko on 22.08.2017.
  */
-public class Update implements Command{
-    private View view;
-    private DatabaseManager databaseManager;
+public class Update extends AbstractCommand implements Command{
 
     public Update(View view, DatabaseManager databaseManager) {
-        this.view = view;
-        this.databaseManager = databaseManager;
+        super(view, databaseManager);
     }
 
     @Override
     public void run(String[] commands) {
         checkArgsQty(commands,6,true);
         if (commands.length%2!=0) throw new IllegalArgumentException("неверное количество параметров - требуется четное количество!");
-        String tableName = commands[1];
+        String tableName = commands[TABLENAMECOLUMN];
         String checkedColumn = commands[2];
         String checkedValue = commands[3];
         String[] columns = new String[(commands.length-4)/2];

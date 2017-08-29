@@ -10,7 +10,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * Created by s.sheyko on 01.08.2017.
  */
-public class TestJDBCDatabaseManager {
+public class JDBCDatabaseManagerTest {
     private DatabaseManager manager;
 
     @Before

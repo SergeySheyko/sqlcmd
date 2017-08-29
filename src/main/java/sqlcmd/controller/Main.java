@@ -1,4 +1,4 @@
-package sqlcmd;
+package sqlcmd.controller;
 
 import sqlcmd.controller.MainController;
 import sqlcmd.controller.command.*;
@@ -30,10 +30,10 @@ public class Main  {
         commandMap.put("insert",new Insert(view,databaseManager));
         commandMap.put("update",new Update(view,databaseManager));
         commandMap.put("delete",new Delete(view,databaseManager));
-        commandMap.put("help",new Help(view));
+        commandMap.put("help",new Help(view,null));
         commandMap.put("exit",new Exit(view,databaseManager));
 
-        MainController mainController = new MainController(view,databaseManager,commandMap);
+        MainController mainController = new MainController(view,commandMap);
         mainController.run();
     }
 

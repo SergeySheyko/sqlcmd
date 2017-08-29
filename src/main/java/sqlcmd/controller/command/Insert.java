@@ -6,13 +6,10 @@ import sqlcmd.view.View;
 /**
  * Created by s.sheyko on 22.08.2017.
  */
-public class Insert implements Command{
-    private View view;
-    private DatabaseManager databaseManager;
+public class Insert extends AbstractCommand implements Command{
 
     public Insert(View view, DatabaseManager databaseManager) {
-        this.view = view;
-        this.databaseManager = databaseManager;
+        super(view, databaseManager);
     }
 
     @Override

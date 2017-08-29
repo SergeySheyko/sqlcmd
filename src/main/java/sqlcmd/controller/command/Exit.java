@@ -6,13 +6,10 @@ import sqlcmd.view.View;
 /**
  * Created by s.sheyko on 22.08.2017.
  */
-public class Exit implements Command {
-    private View view;
-    private DatabaseManager databaseManager;
+public class Exit extends AbstractCommand implements Command {
 
     public Exit(View view, DatabaseManager databaseManager) {
-        this.view = view;
-        this.databaseManager = databaseManager;
+        super(view, databaseManager);
     }
 
     @Override

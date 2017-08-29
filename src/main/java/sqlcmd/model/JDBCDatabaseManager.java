@@ -2,8 +2,6 @@ package sqlcmd.model;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -59,25 +57,25 @@ public class JDBCDatabaseManager implements DatabaseManager {
     }
 
     @Override
-    public String[] getTablesList() {
+    public ArrayList<String> getTablesList() {
         if (connection==null) throw new RuntimeException("Соединение с базой не установлено!");
         String sql = "SELECT table_name FROM information_schema.tables WHERE table_schema='public' AND table_type='BASE TABLE'";
         try (Statement stmt = connection.createStatement();
-            ResultSet rs = stmt.executeQuery(sql);){
+            ResultSet rs = stmt.executeQuery(sql)){
             ArrayList<String> tables = new ArrayList<>();
             while (rs.next()){
                 tables.add(rs.getString("table_name"));
             }
-            return tables.toArray(new String[tables.size()]);
+            return tables;
         }catch (SQLException e){
-            throw new RuntimeException("Error while getting tables list!",e);
+            throw new RuntimeException("Ошибка при получении списка таблиц!",e);
         }
     }
 
     @Override
     public int insert(String[] columns, String[] values, String tableName) {
         String sql = "Insert into public."+tableName+" ("+getPreparedNames(columns)+") VALUES ("+getPreparedValues(values)+")";
-        try (Statement stmt = connection.createStatement();){
+        try (Statement stmt = connection.createStatement()){
             return stmt.executeUpdate(sql);
         } catch (SQLException e) {
             throw new RuntimeException("Error while inserting data!",e);
@@ -102,7 +100,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
         DataSet data = null;
         String sql = "SELECT * FROM public."+tableName;
         try (Statement stmt = connection.createStatement();
-            ResultSet rs = stmt.executeQuery(sql);) {
+            ResultSet rs = stmt.executeQuery(sql)) {
             ResultSetMetaData rsmd = rs.getMetaData();
             String[] columns = new String[rsmd.getColumnCount()];
             for (int i=1;i<=columns.length;i++) columns[i-1] = rsmd.getColumnName(i);
@@ -126,7 +124,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
             sql += updatedColumns[i]+" = ?,";
         }
         sql = sql.substring(0,sql.length()-1)+" Where "+checkedColumn+"=?";
-        try (PreparedStatement psmt = connection.prepareStatement(sql);){
+        try (PreparedStatement psmt = connection.prepareStatement(sql)){
             for (int i=0;i<updatedValues.length;i++){
                 psmt.setString(i+1,updatedValues[i]);
             }
@@ -140,7 +138,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
 
     public void dropTable(String tableName) {
         String sql = "DROP TABLE public."+tableName;
-        try (PreparedStatement pstmt = connection.prepareStatement(sql);){
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)){
             pstmt.executeUpdate();
         }catch (SQLException e){
             throw new RuntimeException("Error while deleting the table "+tableName, e);
@@ -156,7 +154,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
         }
         sql = sql.substring(0,sql.length()-1);
         sql += ")";
-        try (PreparedStatement pstmt = connection.prepareStatement(sql);){
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)){
             pstmt.executeUpdate();
         }catch (SQLException e){
             e.printStackTrace();

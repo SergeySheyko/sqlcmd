@@ -7,13 +7,10 @@ import sqlcmd.view.View;
 /**
  * Created by s.sheyko on 22.08.2017.
  */
-public class Find implements Command{
-    private View view;
-    private DatabaseManager databaseManager;
+public class Find extends AbstractCommand implements Command{
 
     public Find(View view, DatabaseManager databaseManager) {
-        this.view = view;
-        this.databaseManager = databaseManager;
+        super(view, databaseManager);
     }
 
     @Override
