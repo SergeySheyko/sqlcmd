@@ -12,7 +12,7 @@ public interface DatabaseManager {
 
     void disconnect();
 
-    int insert(String[] columns, String[] values, String tableName);
+    int insert(String tableName, DataSet dataSet);
 
     DataSet getTableData(String tableName);
 

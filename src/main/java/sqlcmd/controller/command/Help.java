@@ -25,7 +25,7 @@ public class Help extends AbstractCommand implements Command {
         dataSet.addRow(new String[]{"tables","Вывод списка таблиц","tables"});
         dataSet.addRow(new String[]{"clear","Очистка таблицы","clear|tableName"});
         dataSet.addRow(new String[]{"drop","Удаление таблицы","drop|tableName"});
-        dataSet.addRow(new String[]{"create","Создание новой таблицы","create|tableName|column1|column2|...|columnN"});
+        dataSet.addRow(new String[]{"create","Создание новой таблицы (id создается автоматически)","create|tableName|column1|column2|...|columnN"});
         dataSet.addRow(new String[]{"find","Получение содержимого таблицы","find|tableName"});
         dataSet.addRow(new String[]{"insert","Добавление строки в таблицу","insert|tableName|column1|value1|column2|value2|...|columnN|valueN"});
         dataSet.addRow(new String[]{"help","Вывод списка команд","help"});

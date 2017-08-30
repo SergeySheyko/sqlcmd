@@ -1,4 +1,4 @@
-package java.sqlcmd.model;
+package sqlcmd.model;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -33,29 +33,35 @@ public class JDBCDatabaseManagerTest {
         manager.dropTable("user");
         String[] columns = {"id","name","password"};
         manager.createTable("user",columns);
-//        DataSet[] data = manager.getTableData("user");
+        DataSet dataSet = manager.getTableData("user");
+        assertEquals(Arrays.toString(columns),Arrays.toString(dataSet.getColumns()));
     }
 
     @Test
     public void testDropTable() {
+        String[] columns = {"id","name","password"};
+        manager.createTable("user",columns);
         manager.dropTable("user");
+        ArrayList<String> tableNames = manager.getTablesList();
+        assertEquals("[]",tableNames.toString());
     }
 
     @Test
     public void testGetTableData(){
-//        manager.clear("user");
-//        DataSet input = new DataSet();
-//        input.put("id","13");
-//        input.put("name","Stiven");
-//        input.put("password","pass");
-//        manager.insert(input,"user");
+        String tableName = "user";
+        manager.delete(tableName,null,null);
+        String[] columns = {"id","name","password"};
+        DataSet input = new DataSet(columns);
+        input.addRow(new Object[]{13,"Ivanov","12345"});
+        input.addRow(new Object[]{13,"Petrov","qwerty"});
+        input.addRow(new Object[]{13,"Sidorov","789456123"});
+        manager.insert(tableName,input);
 
-//        DataSet[] users = manager.getTableData("user");
-//        assertEquals(1,users.length);
-//
-//        DataSet user = users[0];
-//        assertEquals("[id, name, password]",Arrays.toString(user.getNames()));
-//        assertEquals("[13, Stiven, pass]",Arrays.toString(user.getValues()));
+        DataSet users = manager.getTableData(tableName);
+        assertEquals(3,users.getRows().size());
+
+        assertEquals("[id, name, password]",Arrays.toString(users.getColumns()));
+        assertEquals("[13, Ivanov, 12345]",Arrays.toString(users.getRows().get(0)));
     }
 
     @Test

@@ -1,5 +1,6 @@
 package sqlcmd.controller.command;
 
+import sqlcmd.model.DataSet;
 import sqlcmd.model.DatabaseManager;
 import sqlcmd.view.View;
 
@@ -24,7 +25,10 @@ public class Insert extends AbstractCommand implements Command{
             if (i%2==0) columns[columnsIndex++] = commands[i];
             else values[valuesIndex++] = commands[i];
         }
-        view.write("добавлено "+databaseManager.insert(columns,values, tableName)+" строк");
+        DataSet dataSet = new DataSet(columns);
+        dataSet.addRow(values);
+        int affectedRows = databaseManager.insert(tableName,dataSet);
+        view.write("Добавлено %d строк",affectedRows);
     }
 
     @Override
