@@ -1,10 +1,7 @@
 package sqlcmd.controller.command;
 
-import sqlcmd.model.DataSet;
 import sqlcmd.model.DatabaseManager;
 import sqlcmd.view.View;
-
-import java.util.Arrays;
 
 /**
  * Created by s.sheyko on 22.08.2017.
@@ -17,8 +14,7 @@ public class Update extends AbstractCommand implements Command{
 
     @Override
     public void run(String[] commands) {
-        checkArgsQty(commands,6,true);
-        if (commands.length%2!=0) throw new IllegalArgumentException("неверное количество параметров - требуется четное количество!");
+        checkArguments(commands,6,true,true,false);
         String tableName = commands[TABLENAMECOLUMN];
         String checkedColumn = commands[2];
         String checkedValue = commands[3];
@@ -31,7 +27,11 @@ public class Update extends AbstractCommand implements Command{
             else values[valuesIndex++] = commands[i];
         }
         databaseManager.update(tableName,checkedColumn,checkedValue,columns,values);
-        DataSet dataSet = databaseManager.getTableData(tableName);
-        displayTableData(dataSet,view);
+        displayTable(tableName);
+    }
+
+    @Override
+    public boolean exit() {
+        return false;
     }
 }

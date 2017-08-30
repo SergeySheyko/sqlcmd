@@ -21,14 +21,30 @@ public abstract class AbstractCommand {
         this.databaseManager = databaseManager;
     }
 
-    void checkArgsQty(String[] commands, int qty, boolean equalOrMore) {
-        String moreThan = equalOrMore ? " и более" : "";
-        if (commands.length != qty && !equalOrMore || equalOrMore && commands.length < qty) {
-            throw new IllegalArgumentException(String.format("неверное количество параметров - требуется %d%s, обнаружено %d", qty, moreThan, commands.length));
-        }
+    void checkArguments(String[] commands, int requiredLength){
+        checkArguments(commands, requiredLength, false, false, false);
     }
 
+    void checkArguments(String[] commands, int requiredLength, boolean equalOrMore) {
+        checkArguments(commands, requiredLength, equalOrMore, false, false);
+    }
 
+    void checkArguments(String[] commands, int requiredLength, boolean equalOrMore, boolean evenOnly, boolean oddOnly) {
+        int length = commands.length;
+
+        if (evenOnly && length%2!=0){
+            throw new IllegalArgumentException("неверное количество параметров - требуется четное количество");
+        }
+        if (oddOnly && length%2==0){
+            throw new IllegalArgumentException("неверное количество параметров - требуется нечетное количество");
+        }
+        if (!equalOrMore && length != requiredLength){
+            throw new IllegalArgumentException(String.format("неверное количество параметров - требуется %d, обнаружено %d", requiredLength, length));
+        }
+        if (equalOrMore && length < requiredLength){
+            throw new IllegalArgumentException(String.format("неверное количество параметров - требуется %d и более, обнаружено %d", requiredLength, length));
+        }
+    }
 
     void displayTableData(DataSet dataSet, View view) {
         String[] columns = dataSet.getColumns();
@@ -36,24 +52,29 @@ public abstract class AbstractCommand {
         String delimiterRow = "+";
         String formatLine = "|";
         for (int i = 0; i < columns.length; i++) {
-            int maxLen = columns[i].length();
+            int maxLength = columns[i].length();
             if (rows != null) {
                 for (Object[] row : rows) {
-                    if (row[i].toString().length() > maxLen) maxLen = row[i].toString().length();
+                    if (row[i].toString().length() > maxLength) maxLength = row[i].toString().length();
                 }
             }
-            formatLine += " %-" + maxLen + "s |";
+            formatLine += " %-" + maxLength + "s |";
             delimiterRow += "-";
-            for (int j = 0; j < maxLen; j++) delimiterRow += "-";
+            for (int j = 0; j < maxLength; j++) delimiterRow += "-";
             delimiterRow += "-+";
         }
         view.write(delimiterRow);
-        view.write(String.format(formatLine, (Object[]) columns));
+        view.write(formatLine, (Object[]) columns);
         view.write(delimiterRow);
         if (rows == null) return;
         for (Object[] row : rows) {
-            view.write(String.format(formatLine, row));
+            view.write(formatLine, row);
             view.write(delimiterRow);
         }
+    }
+
+    void displayTable(String tableName){
+        DataSet dataSet = databaseManager.getTableData(tableName);
+        displayTableData(dataSet,view);
     }
 }

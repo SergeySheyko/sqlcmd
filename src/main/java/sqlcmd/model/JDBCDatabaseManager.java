@@ -10,25 +10,23 @@ import java.util.logging.Logger;
  */
 public class JDBCDatabaseManager implements DatabaseManager {
     private Connection connection;
+    private final String DRIVERNAME = "org.postgresql.Driver";
+    private final String URL = "jdbc:postgresql://localhost:5432/";
 
     @Override
     public void connect(String databaseName, String userName, String password){
-
-        String url ="jdbc:postgresql://localhost:5432/" + databaseName;
-
         try {
-            Class.forName("org.postgresql.Driver");
-
+            Class.forName(DRIVERNAME);
         } catch (ClassNotFoundException e) {
-            throw new RuntimeException("Driver is not found!", e);
+            throw new RuntimeException("Драйвер не найден!", e);
         }
         try {
-            Logger logger = Logger.getLogger("org.postgresql.Driver");
+            Logger logger = Logger.getLogger(DRIVERNAME);
             logger.setLevel(Level.OFF );
-            connection = DriverManager.getConnection(url, userName, password);
+            connection = DriverManager.getConnection(URL+databaseName, userName, password);
         } catch (SQLException e) {
             connection = null;
-            throw new RuntimeException("Can't connect to database", e);
+            throw new RuntimeException("Не удается подключиться к базе", e);
         }
     }
 
@@ -37,7 +35,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
         if (connection!=null) try {
             connection.close();
         } catch (SQLException e) {
-            throw new RuntimeException("Error while disconnecting from database", e);
+            throw new RuntimeException("Ошибка при отключении от базы", e);
         }
     }
 

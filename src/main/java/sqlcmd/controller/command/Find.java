@@ -1,6 +1,5 @@
 package sqlcmd.controller.command;
 
-import sqlcmd.model.DataSet;
 import sqlcmd.model.DatabaseManager;
 import sqlcmd.view.View;
 
@@ -15,9 +14,13 @@ public class Find extends AbstractCommand implements Command{
 
     @Override
     public void run(String[] commands) {
-        checkArgsQty(commands,2,false);
-        DataSet dataSet = databaseManager.getTableData(commands[1]);
-        displayTableData(dataSet,view);
+        checkArguments(commands,2);
+        String tableName = commands[TABLENAMECOLUMN];
+        displayTable(tableName);
+    }
 
+    @Override
+    public boolean exit() {
+        return false;
     }
 }

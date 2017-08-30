@@ -11,7 +11,7 @@ public class Connect extends AbstractCommand implements Command{
 
     @Override
     public void run(String[] commands) {
-        checkArgsQty(commands,4,false);
+        checkArguments(commands,4);
         try {
             String databaseName = commands[DATABASECOLUMN];
             String userName = commands[USERNAMECOLUMN];
@@ -21,5 +21,10 @@ public class Connect extends AbstractCommand implements Command{
         finally {}
 
         view.write("Соединение успешно!");
+    }
+
+    @Override
+    public boolean exit() {
+        return false;
     }
 }

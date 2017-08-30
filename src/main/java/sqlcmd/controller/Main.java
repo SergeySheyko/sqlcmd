@@ -20,20 +20,21 @@ public class Main  {
 
         View view = new Console();
         DatabaseManager databaseManager = new JDBCDatabaseManager();
-        Map<String,Command> commandMap = new HashMap<>();
-        commandMap.put("connect",new Connect(view,databaseManager));
-        commandMap.put("tables",new Tables(view,databaseManager));
-        commandMap.put("clear",new Clear(view,databaseManager));
-        commandMap.put("drop",new Drop(view,databaseManager));
-        commandMap.put("create",new Create(view,databaseManager));
-        commandMap.put("find",new Find(view,databaseManager));
-        commandMap.put("insert",new Insert(view,databaseManager));
-        commandMap.put("update",new Update(view,databaseManager));
-        commandMap.put("delete",new Delete(view,databaseManager));
-        commandMap.put("help",new Help(view,null));
-        commandMap.put("exit",new Exit(view,databaseManager));
 
-        MainController mainController = new MainController(view,commandMap);
+        Map<String,Command> commandsMap = new HashMap<>();
+        commandsMap.put("connect",new Connect(view,databaseManager));
+        commandsMap.put("tables",new Tables(view,databaseManager));
+        commandsMap.put("clear",new Clear(view,databaseManager));
+        commandsMap.put("drop",new Drop(view,databaseManager));
+        commandsMap.put("create",new Create(view,databaseManager));
+        commandsMap.put("find",new Find(view,databaseManager));
+        commandsMap.put("insert",new Insert(view,databaseManager));
+        commandsMap.put("update",new Update(view,databaseManager));
+        commandsMap.put("delete",new Delete(view,databaseManager));
+        commandsMap.put("help",new Help(view,null));
+        commandsMap.put("exit",new Exit(view,databaseManager));
+
+        MainController mainController = new MainController(view,commandsMap);
         mainController.run();
     }
 

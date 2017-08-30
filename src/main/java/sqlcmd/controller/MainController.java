@@ -10,27 +10,28 @@ import java.util.Map;
  */
 public class MainController {
     private View view;
-    private Map<String, Command> commandMap;
+    private Map<String, Command> commandsMap;
 
-    public MainController(View view, Map<String, Command> commandMap) {
+    public MainController(View view, Map<String, Command> commandsMap) {
         this.view = view;
-        this.commandMap = commandMap;
+        this.commandsMap = commandsMap;
     }
 
     public void run() {
         view.write("Привет!");
-        while (true){
+        while (true) {
             try {
                 view.write("Введи команду или help для помощи:");
                 String commandLine = view.read();
                 String[] commands = getPreparedCommands(commandLine);
-                if (commandMap.containsKey(commands[0])){
-                    Command command = commandMap.get(commands[0]);
+                if (commandsMap.containsKey(commands[0])) {
+                    Command command = commandsMap.get(commands[0]);
                     command.run(commands);
+                    if (command.exit()) break;
+                } else {
+                    view.write("Неверная команда!");
                 }
-                else view.write("Неверная команда!");
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 printError(e);
             }
         }
@@ -39,7 +40,7 @@ public class MainController {
 
     private String[] getPreparedCommands(String commandLine) {
         String[] result = commandLine.split("[|]");
-        if (result.length==0) {
+        if (result.length == 0) {
             result = new String[1];
             result[0] = commandLine;
         }
@@ -48,8 +49,10 @@ public class MainController {
 
     public void printError(Exception e) {
         String errorMessage = e.getMessage();
-        if (e.getCause()!=null) errorMessage+=" "+e.getCause().getMessage();
-        view.write("Неудача по причине: "+errorMessage);
+        if (e.getCause() != null) {
+            errorMessage += " " + e.getCause().getMessage();
+        }
+        view.write("Неудача по причине: " + errorMessage);
         view.write("Повтори попытку");
     }
 

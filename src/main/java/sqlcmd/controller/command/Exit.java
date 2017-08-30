@@ -16,6 +16,10 @@ public class Exit extends AbstractCommand implements Command {
     public void run(String[] commands) {
         databaseManager.disconnect();
         view.write("До свидания!");
-        System.exit(0);
+    }
+
+    @Override
+    public boolean exit() {
+        return true;
     }
 }

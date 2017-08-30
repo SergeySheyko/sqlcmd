@@ -14,7 +14,12 @@ public class Drop extends AbstractCommand implements Command{
 
     @Override
     public void run(String[] commands) {
-        checkArgsQty(commands,2,false);
+        checkArguments(commands,2);
         databaseManager.dropTable(commands[TABLENAMECOLUMN]);
+    }
+
+    @Override
+    public boolean exit() {
+        return false;
     }
 }

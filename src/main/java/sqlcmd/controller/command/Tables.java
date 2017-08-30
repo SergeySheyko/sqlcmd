@@ -21,4 +21,9 @@ public class Tables extends AbstractCommand implements Command {
         view.write(tablesList.toString());
     }
 
+    @Override
+    public boolean exit() {
+        return false;
+    }
+
 }

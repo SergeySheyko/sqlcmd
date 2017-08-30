@@ -3,6 +3,7 @@ package sqlcmd.model;
 import java.util.ArrayList;
 
 public interface DatabaseManager {
+
     void connect(String databaseName, String userName, String password);
 
     void delete(String tableName,String column,String value);

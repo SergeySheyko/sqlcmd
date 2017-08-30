@@ -14,9 +14,8 @@ public class Insert extends AbstractCommand implements Command{
 
     @Override
     public void run(String[] commands) {
-        checkArgsQty(commands,4,true);
-        if (commands.length%2!=0) throw new IllegalArgumentException("неверное количество параметров - требуется четное количество!");
-        String tableName = commands[1];
+        checkArguments(commands,4,true,true,false);
+        String tableName = commands[TABLENAMECOLUMN];
         String[] columns = new String[(commands.length-2)/2];
         String[] values = new String[(commands.length-2)/2];
         int columnsIndex = 0;
@@ -26,5 +25,10 @@ public class Insert extends AbstractCommand implements Command{
             else values[valuesIndex++] = commands[i];
         }
         view.write("добавлено "+databaseManager.insert(columns,values, tableName)+" строк");
+    }
+
+    @Override
+    public boolean exit() {
+        return false;
     }
 }

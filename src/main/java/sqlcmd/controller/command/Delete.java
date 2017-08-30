@@ -1,10 +1,7 @@
 package sqlcmd.controller.command;
 
-import sqlcmd.model.DataSet;
 import sqlcmd.model.DatabaseManager;
 import sqlcmd.view.View;
-
-import java.util.Arrays;
 
 public class Delete extends AbstractCommand implements Command{
 
@@ -14,12 +11,16 @@ public class Delete extends AbstractCommand implements Command{
 
     @Override
     public void run(String[] commands) {
-        checkArgsQty(commands,4,false);
+        checkArguments(commands,4);
         String tableName = commands[TABLENAMECOLUMN];
         String checkedColumn = commands[2];
         String checkedValue = commands[3];
         databaseManager.delete(tableName,checkedColumn,checkedValue);
-        DataSet dataSet = databaseManager.getTableData(tableName);
-        displayTableData(dataSet,view);
+        displayTable(tableName);
+    }
+
+    @Override
+    public boolean exit() {
+        return false;
     }
 }

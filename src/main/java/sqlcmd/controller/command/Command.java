@@ -8,4 +8,6 @@ import java.util.List;
 public interface Command {
 
     void run(String[] commands);
+
+    boolean exit();
 }
