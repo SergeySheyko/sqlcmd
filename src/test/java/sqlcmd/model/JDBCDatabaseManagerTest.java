@@ -2,9 +2,6 @@ package sqlcmd.model;
 
 import org.junit.Before;
 import org.junit.Test;
-import sqlcmd.model.JDBCDatabaseManager;
-import sqlcmd.model.DatabaseManager;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -15,6 +12,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class JDBCDatabaseManagerTest {
     private DatabaseManager manager;
+    private final String DEFAULTTABLENAME = "user";
 
     @Before
     public void setup(){
@@ -25,39 +23,38 @@ public class JDBCDatabaseManagerTest {
     @Test
     public void testGetTableNames(){
         ArrayList<String> tableNames = manager.getTablesList();
-        assertEquals("[user]",tableNames.toString());
+        assertEquals(String.format("[%s]",DEFAULTTABLENAME),tableNames.toString());
     }
 
     @Test
     public void testCreateTable() {
-        manager.dropTable("user");
+        manager.dropTable(DEFAULTTABLENAME);
         String[] columns = {"id","name","password"};
-        manager.createTable("user",columns);
-        DataSet dataSet = manager.getTableData("user");
+        manager.createTable(DEFAULTTABLENAME,columns);
+        DataSet dataSet = manager.getTableData(DEFAULTTABLENAME);
         assertEquals(Arrays.toString(columns),Arrays.toString(dataSet.getColumns()));
     }
 
     @Test
     public void testDropTable() {
         String[] columns = {"id","name","password"};
-        manager.createTable("user",columns);
-        manager.dropTable("user");
+        manager.createTable(DEFAULTTABLENAME,columns);
+        manager.dropTable(DEFAULTTABLENAME);
         ArrayList<String> tableNames = manager.getTablesList();
         assertEquals("[]",tableNames.toString());
     }
 
     @Test
     public void testGetTableData(){
-        String tableName = "user";
-        manager.delete(tableName,null,null);
+        manager.delete(DEFAULTTABLENAME,null,null);
         String[] columns = {"id","name","password"};
         DataSet input = new DataSet(columns);
         input.addRow(new Object[]{13,"Ivanov","12345"});
-        input.addRow(new Object[]{13,"Petrov","qwerty"});
-        input.addRow(new Object[]{13,"Sidorov","789456123"});
-        manager.insert(tableName,input);
+        input.addRow(new Object[]{15,"Petrov","qwerty"});
+        input.addRow(new Object[]{17,"Sidorov","789456123"});
+        manager.insert(DEFAULTTABLENAME,input);
 
-        DataSet users = manager.getTableData(tableName);
+        DataSet users = manager.getTableData(DEFAULTTABLENAME);
         assertEquals(3,users.getRows().size());
 
         assertEquals("[id, name, password]",Arrays.toString(users.getColumns()));
@@ -65,32 +62,20 @@ public class JDBCDatabaseManagerTest {
     }
 
     @Test
-    public void testGetColumnNames() {
-//        String[] columnNames = manager.getColumnNames("user");
-//        assertEquals("[name, password, id]",Arrays.toString(columnNames));
-    }
-
-    @Test
     public void testUpdateTableData(){
-//        manager.clear("user");
-//
-//        DataSet input = new DataSet();
-//        input.put("id","13");
-//        input.put("name","Stiven");
-//        input.put("password","pass");
-//        manager.insert(input,"user");
-//
-//        DataSet newValue = new DataSet();
-//        newValue.put("name","Stiv");
-//        newValue.put("password","pass2");
-//        manager.update("user",13,newValue);
+        manager.delete(DEFAULTTABLENAME,null,null);
+        String[] columns = {"id","name","password"};
+        DataSet input = new DataSet(columns);
+        input.addRow(new Object[]{13,"Ivanov","12345"});
+        manager.insert(DEFAULTTABLENAME,input);
+        String[] updatedColumns = {"name","password"};
+        String[] updatedValues = {"Jason","OoOoOo"};
+        manager.update(DEFAULTTABLENAME,"id","13",updatedColumns,updatedValues);
 
-//        DataSet[] users = manager.getTableData("user");
-//        assertEquals(1,users.length);
-//
-//        DataSet user = users[0];
-//        assertEquals("[id, name, password]",Arrays.toString(user.getNames()));
-//        assertEquals("[13, Stiv, pass2]",Arrays.toString(user.getValues()));
+        DataSet users = manager.getTableData(DEFAULTTABLENAME);
+
+        assertEquals("[id, name, password]",Arrays.toString(users.getColumns()));
+        assertEquals("[13, Jason, OoOoOo]",Arrays.toString(users.getRows().get(0)));
     }
 
 
