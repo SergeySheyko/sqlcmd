@@ -41,14 +41,21 @@ public class JDBCDatabaseManager implements DatabaseManager {
 
     @Override
     public void delete(String tableName, String column, String value) {
-        String sql = "DELETE FROM public." + tableName;
-        if (column != null) sql += " WHERE " + column + "=?";
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+        checkConnection();
+        String whereStatement = "";
+        if (column != null) {
+            whereStatement = String.format(" WHERE %s=?",column);
+        }
+        String sql = String.format("DELETE FROM public.%s %s",tableName,whereStatement);
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             if (column != null) {
-                if (column.equals("id")) pstmt.setInt(1, Integer.parseInt(value));
-                else pstmt.setString(1, value);
+                if (column.equals("id")) {
+                    preparedStatement.setInt(1, Integer.parseInt(value));
+                } else {
+                    preparedStatement.setString(1, value);
+                }
             }
-            pstmt.executeUpdate();
+            preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Ошибка при очистке таблицы " + tableName, e);
         }
@@ -56,15 +63,13 @@ public class JDBCDatabaseManager implements DatabaseManager {
 
     @Override
     public ArrayList<String> getTablesList() {
-        if (connection == null) {
-            throw new RuntimeException("Соединение с базой не установлено!");
-        }
+        checkConnection();
         String sql = "SELECT table_name FROM information_schema.tables WHERE table_schema='public' AND table_type='BASE TABLE'";
         try (Statement statement = connection.createStatement();
-             ResultSet rs = statement.executeQuery(sql)) {
+             ResultSet resultSet = statement.executeQuery(sql)) {
             ArrayList<String> tables = new ArrayList<>();
-            while (rs.next()) {
-                tables.add(rs.getString("table_name"));
+            while (resultSet.next()) {
+                tables.add(resultSet.getString("table_name"));
             }
             return tables;
         } catch (SQLException e) {
@@ -74,6 +79,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
 
     @Override
     public int insert(String tableName, DataSet dataSet) {
+        checkConnection();
         int result = 0;
         String[] columns = dataSet.getColumns();
         ArrayList<Object[]> values = dataSet.getRows();
@@ -114,19 +120,21 @@ public class JDBCDatabaseManager implements DatabaseManager {
 
     @Override
     public DataSet getTableData(String tableName) {
-        if (connection == null) throw new RuntimeException("Соединение с базой не установлено!");
+        checkConnection();
         DataSet data = null;
         String sql = "SELECT * FROM public." + tableName;
-        try (Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
-            ResultSetMetaData rsmd = rs.getMetaData();
-            String[] columns = new String[rsmd.getColumnCount()];
-            for (int i = 1; i <= columns.length; i++) columns[i - 1] = rsmd.getColumnName(i);
+        try (Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(sql)) {
+            ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
+            String[] columns = new String[resultSetMetaData.getColumnCount()];
+            for (int i = 1; i <= columns.length; i++) {
+                columns[i - 1] = resultSetMetaData.getColumnName(i);
+            }
             data = new DataSet(columns);
-            while (rs.next()) {
+            while (resultSet.next()) {
                 Object[] row = new Object[columns.length];
                 for (int i = 1; i <= columns.length; i++) {
-                    row[i - 1] = rs.getObject(i);
+                    row[i - 1] = resultSet.getObject(i);
                 }
                 data.addRow(row);
             }
@@ -136,29 +144,44 @@ public class JDBCDatabaseManager implements DatabaseManager {
         return data;
     }
 
-    @Override
-    public void update(String tableName, String checkedColumn, String checkedValue, String[] updatedColumns, String[] updatedValues) {
-        String sql = "Update public." + tableName + " Set ";
-        for (int i = 0; i < updatedColumns.length; i++) {
-            sql += updatedColumns[i] + " = ?,";
+    private void checkConnection() {
+        if (connection == null) {
+            throw new RuntimeException("Соединение с базой не установлено!");
         }
-        sql = sql.substring(0, sql.length() - 1) + " Where " + checkedColumn + "=?";
-        try (PreparedStatement psmt = connection.prepareStatement(sql)) {
-            for (int i = 0; i < updatedValues.length; i++) {
-                psmt.setString(i + 1, updatedValues[i]);
+    }
+
+    @Override
+    public void update(String tableName, String checkedColumn, String checkedValue, String[] updatedColumns, String[] newValues) {
+        checkConnection();
+        String setStatement = "";
+        for (String updatedColumn : updatedColumns) {
+            if (setStatement.length()!=0){
+                setStatement+=",";
             }
-            if (checkedColumn.equals("id")) psmt.setInt(updatedValues.length + 1, Integer.parseInt(checkedValue));
-            else psmt.setString(updatedValues.length + 1, checkedValue);
-            psmt.executeUpdate();
+            setStatement += updatedColumn + " = ?";
+        }
+        String sql = String.format("UPDATE public.%s Set %s WHERE %s=?",tableName,setStatement,checkedColumn);
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            for (int i = 0; i < newValues.length; i++) {
+                preparedStatement.setString(i + 1, newValues[i]);
+            }
+            if (checkedColumn.equals("id")) {
+                preparedStatement.setInt(newValues.length + 1, Integer.parseInt(checkedValue));
+            } else {
+                preparedStatement.setString(newValues.length + 1, checkedValue);
+            }
+            preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Ошибка в операции UPDATE!", e);
         }
     }
 
+    @Override
     public void dropTable(String tableName) {
-        String sql = "DROP TABLE IF EXISTS public." + tableName;
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.executeUpdate();
+        checkConnection();
+        String sql = String.format("DROP TABLE IF EXISTS public.%s",tableName);
+        try (Statement statement = connection.createStatement()) {
+            statement.executeUpdate(sql);
         } catch (SQLException e) {
             throw new RuntimeException("Ошибка при удалении таблицы " + tableName, e);
         }
@@ -166,17 +189,18 @@ public class JDBCDatabaseManager implements DatabaseManager {
 
     @Override
     public void createTable(String tableName, String[] columns) {
-        if (connection == null) return;
-        String sql = "CREATE TABLE IF NOT EXISTS public." + tableName + " (id SERIAL NOT NULL PRIMARY KEY,";
+        checkConnection();
+        String columnsList = "";
         for (String column : columns) {
-            if (!column.toLowerCase().equals("id")) sql += column + " TEXT,";
+            if (!column.toLowerCase().equals("id")) {
+                columnsList += ","+column + " TEXT";
+            }
         }
-        sql = sql.substring(0, sql.length() - 1);
-        sql += ")";
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.executeUpdate();
+        String sql = String.format("CREATE TABLE IF NOT EXISTS public.%s (id SERIAL NOT NULL PRIMARY KEY%s)",tableName,columnsList);
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Ошибка при создании таблицы " + tableName, e);
         }
     }
 

@@ -11,7 +11,7 @@ public class Clear extends AbstractCommand implements Command{
 
     @Override
     public void run(String[] commands) {
-        checkArguments(commands,2);
+        checkParameters(commands,2);
         String tableName = commands[COMMANDCOLUMN];
         databaseManager.delete(tableName,null,null);
         view.write("Таблица %s успешно очищена.",tableName);

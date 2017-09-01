@@ -21,15 +21,15 @@ public abstract class AbstractCommand {
         this.databaseManager = databaseManager;
     }
 
-    void checkArguments(String[] commands, int requiredLength){
-        checkArguments(commands, requiredLength, false, false, false);
+    void checkParameters(String[] commands, int requiredLength){
+        checkParameters(commands, requiredLength, false, false, false);
     }
 
-    void checkArguments(String[] commands, int requiredLength, boolean equalOrMore) {
-        checkArguments(commands, requiredLength, equalOrMore, false, false);
+    void checkParameters(String[] commands, int requiredLength, boolean equalOrMore) {
+        checkParameters(commands, requiredLength, equalOrMore, false, false);
     }
 
-    void checkArguments(String[] commands, int requiredLength, boolean equalOrMore, boolean evenOnly, boolean oddOnly) {
+    void checkParameters(String[] commands, int requiredLength, boolean equalOrMore, boolean evenOnly, boolean oddOnly) {
         int length = commands.length;
 
         if (evenOnly && length%2!=0){
@@ -43,6 +43,11 @@ public abstract class AbstractCommand {
         }
         if (equalOrMore && length < requiredLength){
             throw new IllegalArgumentException(String.format("неверное количество параметров - требуется %d и более, обнаружено %d", requiredLength, length));
+        }
+        for (String command:commands){
+            if (command.length()==0){
+                throw new IllegalArgumentException("ошибка в параметрах");
+            }
         }
     }
 

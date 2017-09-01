@@ -11,14 +11,16 @@ public class Connect extends AbstractCommand implements Command{
 
     @Override
     public void run(String[] commands) {
-        checkArguments(commands,4);
+        checkParameters(commands,4);
         try {
             String databaseName = commands[DATABASECOLUMN];
             String userName = commands[USERNAMECOLUMN];
             String password = commands[PASSWORDCOLUMN];
             databaseManager.connect(databaseName,userName,password);
         }
-        finally {}
+        catch (Exception e){
+            throw new RuntimeException("Ошибка при подключении к базе",e);
+        }
 
         view.write("Соединение успешно!");
     }

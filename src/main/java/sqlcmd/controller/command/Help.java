@@ -19,8 +19,8 @@ public class Help extends AbstractCommand implements Command {
     public void run(String[] commands) {
         view.write("Доступны следующие команды:");
 
-        String[] headers = {"Название команды","Описание","Формат"};
-        DataSet dataSet = new DataSet(headers);
+        String[] columnsHeaders = {"Название команды","Описание","Формат"};
+        DataSet dataSet = new DataSet(columnsHeaders);
         dataSet.addRow(new String[]{"сonnect","Подключение к БД","connect|database|username|password"});
         dataSet.addRow(new String[]{"tables","Вывод списка таблиц","tables"});
         dataSet.addRow(new String[]{"clear","Очистка таблицы","clear|tableName"});

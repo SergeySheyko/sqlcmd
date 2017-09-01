@@ -11,7 +11,7 @@ public class Delete extends AbstractCommand implements Command{
 
     @Override
     public void run(String[] commands) {
-        checkArguments(commands,4);
+        checkParameters(commands,4);
         String tableName = commands[TABLENAMECOLUMN];
         String checkedColumn = commands[2];
         String checkedValue = commands[3];

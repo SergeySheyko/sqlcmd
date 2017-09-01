@@ -27,7 +27,9 @@ public class MainController {
                 if (commandsMap.containsKey(commands[0])) {
                     Command command = commandsMap.get(commands[0]);
                     command.run(commands);
-                    if (command.exit()) break;
+                    if (command.exit()) {
+                        break;
+                    }
                 } else {
                     view.write("Неверная команда!");
                 }
@@ -55,5 +57,4 @@ public class MainController {
         view.write("Неудача по причине: " + errorMessage);
         view.write("Повтори попытку");
     }
-
 }
