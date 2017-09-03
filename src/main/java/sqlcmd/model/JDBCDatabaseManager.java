@@ -179,7 +179,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
     @Override
     public void dropTable(String tableName) {
         checkConnection();
-        String sql = String.format("DROP TABLE IF EXISTS public.%s",tableName);
+        String sql = String.format("DROP TABLE public.%s",tableName);
         try (Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql);
         } catch (SQLException e) {

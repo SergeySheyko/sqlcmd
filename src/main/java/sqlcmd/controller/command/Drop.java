@@ -16,6 +16,7 @@ public class Drop extends AbstractCommand implements Command{
     public void run(String[] commands) {
         checkParameters(commands,2);
         databaseManager.dropTable(commands[TABLENAMECOLUMN]);
+        view.write("Таблица успешно удалена");
     }
 
     @Override

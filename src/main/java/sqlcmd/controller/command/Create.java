@@ -12,8 +12,9 @@ public class Create extends AbstractCommand implements Command{
     @Override
     public void run(String[] commands) {
         checkParameters(commands,3,true);
-        String[] columns = new String[commands.length-2];
         String tableName = commands[TABLENAMECOLUMN];
+        checkTableName(tableName);
+        String[] columns = new String[commands.length-2];
         int index = 0;
         for (int i=2;i<commands.length;i++){
             columns[index++] = commands[i];

@@ -6,12 +6,13 @@ import java.io.OutputStream;
 /**
  * Created by ser on 31.08.2017.
  */
-public class MyOutputStream extends OutputStream{
+public class LogOutputStream extends OutputStream{
     private String log;
 
     @Override
     public void write(int b) throws IOException {
-        log += String.valueOf((char) b);
+        byte[] bytes = new byte[] { (byte)(b & 0xFF00 >> 8), (byte)(b & 0x00FF) };
+        log += new String(bytes, "UTF-8");
     }
 
     public String getData() {

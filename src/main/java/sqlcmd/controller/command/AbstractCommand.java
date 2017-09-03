@@ -51,6 +51,19 @@ public abstract class AbstractCommand {
         }
     }
 
+    void checkTableName(String tableName){
+        boolean isCorrect = true;
+        if (tableName.length()==0){
+            isCorrect = false;
+        }
+        if (!Character.isLetter(tableName.charAt(0))){
+            isCorrect = false;
+        }
+        if (!isCorrect) {
+            throw new IllegalArgumentException("ошибка в названии таблицы");
+        }
+    }
+
     void displayTableData(DataSet dataSet, View view) {
         String[] columns = dataSet.getColumns();
         List<Object[]> rows = dataSet.getRows();
