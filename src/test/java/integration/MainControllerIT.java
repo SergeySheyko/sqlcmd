@@ -8,6 +8,7 @@ import sqlcmd.controller.Main;
 import sqlcmd.model.DatabaseManager;
 import sqlcmd.model.JDBCDatabaseManager;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
@@ -64,6 +65,22 @@ public class MainControllerIT {
                 "Введи команду или help для помощи:\r\n" +
                 "До свидания!\r\n", getData());
     }
+
+    @Test
+    public void testNotConnected() {
+        in.add("clear|user");
+        in.add("exit");
+
+        Main.main(new String[0]);
+
+        assertEquals("Привет!\r\n" +
+                "Введи команду или help для помощи:\r\n" +
+                "Неудача по причине: Соединение с базой не установлено!\r\n" +
+                "Повтори попытку\r\n" +
+                "Введи команду или help для помощи:\r\n" +
+                "До свидания!\r\n",getData());
+    }
+
 
     public String getData() {
         try {

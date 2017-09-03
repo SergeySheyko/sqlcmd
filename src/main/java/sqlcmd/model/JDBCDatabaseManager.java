@@ -16,11 +16,6 @@ public class JDBCDatabaseManager implements DatabaseManager {
     @Override
     public void connect(String databaseName, String userName, String password) {
         try {
-            Class.forName(DRIVERNAME);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException("Драйвер не найден!", e);
-        }
-        try {
             Logger logger = Logger.getLogger(DRIVERNAME);
             logger.setLevel(Level.OFF);
             connection = DriverManager.getConnection(URL + databaseName, userName, password);
