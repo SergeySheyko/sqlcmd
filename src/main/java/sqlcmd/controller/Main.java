@@ -11,9 +11,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-/**
- * Created by s.sheyko on 01.08.2017.
- */
 public class Main  {
 
     public static void main(String[] args) {

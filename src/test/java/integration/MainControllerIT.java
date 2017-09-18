@@ -16,11 +16,10 @@ import java.io.UnsupportedEncodingException;
 public class MainControllerIT {
     private ConfigurableInputStream in;
     private ByteArrayOutputStream out;
-    private DatabaseManager databaseManager;
 
     @Before
     public void setup(){
-        databaseManager = new JDBCDatabaseManager();
+        DatabaseManager databaseManager = new JDBCDatabaseManager();
         out = new ByteArrayOutputStream();
         in = new ConfigurableInputStream();
 
@@ -82,7 +81,7 @@ public class MainControllerIT {
     }
 
 
-    public String getData() {
+    private String getData() {
         try {
             String result = new String(out.toByteArray(), "UTF-8");
             out.reset();

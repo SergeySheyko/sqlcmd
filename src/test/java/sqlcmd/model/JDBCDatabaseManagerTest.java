@@ -9,9 +9,6 @@ import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * Created by s.sheyko on 01.08.2017.
- */
 public class JDBCDatabaseManagerTest {
     private DatabaseManager manager;
     private final String DEFAULT_TABLENAME = "user";

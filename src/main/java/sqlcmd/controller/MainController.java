@@ -5,12 +5,9 @@ import sqlcmd.view.View;
 
 import java.util.Map;
 
-/**
- * Created by s.sheyko on 15.08.2017.
- */
-public class MainController {
-    private View view;
-    private Map<String, Command> commandsMap;
+class MainController {
+    private final View view;
+    private final Map<String, Command> commandsMap;
 
     public MainController(View view, Map<String, Command> commandsMap) {
         this.view = view;
@@ -49,7 +46,7 @@ public class MainController {
         return result;
     }
 
-    public void printError(Exception e) {
+    private void printError(Exception e) {
         String errorMessage = e.getMessage();
         if (e.getCause() != null) {
             errorMessage += " " + e.getCause().getMessage();

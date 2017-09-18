@@ -4,9 +4,6 @@ import sqlcmd.model.DataSet;
 import sqlcmd.model.DatabaseManager;
 import sqlcmd.view.View;
 
-/**
- * Created by s.sheyko on 22.08.2017.
- */
 public class Insert extends AbstractCommand implements Command {
 
     public Insert(View view, DatabaseManager databaseManager) {

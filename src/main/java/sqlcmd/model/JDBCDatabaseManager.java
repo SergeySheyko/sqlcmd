@@ -5,19 +5,16 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * Created by s.sheyko on 01.08.2017.
- */
 public class JDBCDatabaseManager implements DatabaseManager {
     private Connection connection;
-    private final String DRIVERNAME = "org.postgresql.Driver";
-    private final String URL = "jdbc:postgresql://localhost:5432/";
 
     @Override
     public void connect(String databaseName, String userName, String password) {
         try {
+            String DRIVERNAME = "org.postgresql.Driver";
             Logger logger = Logger.getLogger(DRIVERNAME);
             logger.setLevel(Level.OFF);
+            String URL = "jdbc:postgresql://localhost:5432/";
             connection = DriverManager.getConnection(URL + databaseName, userName, password);
         } catch (SQLException e) {
             connection = null;
@@ -116,7 +113,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
     @Override
     public DataSet getTableData(String tableName) {
         checkConnection();
-        DataSet data = null;
+        DataSet data;
         String sql = "SELECT * FROM public." + tableName;
         try (Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(sql)) {

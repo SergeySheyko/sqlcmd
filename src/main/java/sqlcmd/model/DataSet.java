@@ -2,12 +2,9 @@ package sqlcmd.model;
 
 import java.util.ArrayList;
 
-/**
- * Created by s.sheyko on 19.08.2017.
- */
 public class DataSet {
-    private String[] columns;
-    private ArrayList<Object[]> rows = new ArrayList<Object[]>();
+    private final String[] columns;
+    private final ArrayList<Object[]> rows = new ArrayList<Object[]>();
 
     public DataSet(String[] columns) {
         this.columns = columns;

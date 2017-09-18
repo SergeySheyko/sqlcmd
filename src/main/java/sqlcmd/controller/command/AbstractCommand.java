@@ -6,17 +6,17 @@ import sqlcmd.view.View;
 
 import java.util.List;
 
-public abstract class AbstractCommand {
+abstract class AbstractCommand {
     final int COMMANDCOLUMN = 0;
     final int DATABASECOLUMN = 1;
     final int TABLENAMECOLUMN = 1;
     final int USERNAMECOLUMN = 2;
     final int PASSWORDCOLUMN = 3;
 
-    View view;
-    DatabaseManager databaseManager;
+    final View view;
+    final DatabaseManager databaseManager;
 
-    public AbstractCommand(View view, DatabaseManager databaseManager) {
+    AbstractCommand(View view, DatabaseManager databaseManager) {
         this.view = view;
         this.databaseManager = databaseManager;
     }

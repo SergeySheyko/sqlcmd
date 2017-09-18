@@ -6,9 +6,6 @@ import sqlcmd.view.View;
 
 import java.util.Arrays;
 
-/**
- * Created by s.sheyko on 22.08.2017.
- */
 public class Help extends AbstractCommand implements Command {
 
     public Help(View view, DatabaseManager databaseManager) {

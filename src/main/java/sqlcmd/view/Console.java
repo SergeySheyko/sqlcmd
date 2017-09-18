@@ -2,9 +2,6 @@ package sqlcmd.view;
 
 import java.util.Scanner;
 
-/**
- * Created by ser on 05.08.2017.
- */
 public class Console implements View {
 
     @Override

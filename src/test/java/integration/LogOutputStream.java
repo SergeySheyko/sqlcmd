@@ -3,10 +3,7 @@ package integration;
 import java.io.IOException;
 import java.io.OutputStream;
 
-/**
- * Created by ser on 31.08.2017.
- */
-public class LogOutputStream extends OutputStream{
+class LogOutputStream extends OutputStream{
     private String log;
 
     @Override
