@@ -3,8 +3,8 @@ package sqlcmd.model;
 import java.util.ArrayList;
 
 public class DataSet {
-    private final String[] columns;
-    private final ArrayList<Object[]> rows = new ArrayList<Object[]>();
+    private String[] columns;
+    private ArrayList<Object[]> rows = new ArrayList<Object[]>();
 
     public DataSet(String[] columns) {
         this.columns = columns;
