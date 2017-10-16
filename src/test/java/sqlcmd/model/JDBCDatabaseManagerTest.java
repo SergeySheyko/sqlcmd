@@ -11,52 +11,46 @@ import static org.junit.Assert.assertEquals;
 
 public class JDBCDatabaseManagerTest {
     private DatabaseManager manager;
-    private final String DEFAULT_TABLENAME = "user";
+    private final String TEST_TABLENAME = "user64531rhjbs";
+    private String[] testColumns = {"id", "name", "password"};
+    private boolean doNotDrop = false;
 
     @Before
     public void setup() {
         manager = new JDBCDatabaseManager();
         manager.connect("sqlcmd", "postgres", "postgres");
+        manager.createTable(TEST_TABLENAME, testColumns);
     }
 
     @Test
     public void testGetTableNames() {
         ArrayList<String> tableNames = manager.getTablesList();
-        assertEquals(String.format("[%s]", DEFAULT_TABLENAME), tableNames.toString());
+        assertEquals(String.format("[%s]", TEST_TABLENAME), tableNames.toString());
     }
 
     @Test
     public void testCreateTable() {
-        ArrayList<String> tableNames = manager.getTablesList();
-        if (tableNames.contains(DEFAULT_TABLENAME)) {
-            manager.dropTable(DEFAULT_TABLENAME);
-        }
-        String[] columns = {"id", "name", "password"};
-        manager.createTable(DEFAULT_TABLENAME, columns);
-        DataSet dataSet = manager.getTableData(DEFAULT_TABLENAME);
-        assertEquals(Arrays.toString(columns), Arrays.toString(dataSet.getColumns()));
+        DataSet dataSet = manager.getTableData(TEST_TABLENAME);
+        assertEquals(Arrays.toString(testColumns), Arrays.toString(dataSet.getColumns()));
     }
 
     @Test
     public void testDropTable() {
-        String[] columns = {"id", "name", "password"};
-        manager.createTable(DEFAULT_TABLENAME, columns);
-        manager.dropTable(DEFAULT_TABLENAME);
+        manager.dropTable(TEST_TABLENAME);
         ArrayList<String> tableNames = manager.getTablesList();
-        assertEquals("[]", tableNames.toString());
+        assertEquals(false, tableNames.contains(TEST_TABLENAME));
+        doNotDrop = true;
     }
 
     @Test
     public void testGetTableData() {
-        manager.delete(DEFAULT_TABLENAME, null, null);
-        String[] columns = {"id", "name", "password"};
-        DataSet input = new DataSet(columns);
+        DataSet input = new DataSet(testColumns);
         input.addRow(new Object[]{13, "Ivanov", "12345"});
         input.addRow(new Object[]{15, "Petrov", "qwerty"});
         input.addRow(new Object[]{17, "Sidorov", "789456123"});
-        manager.insert(DEFAULT_TABLENAME, input);
+        manager.insert(TEST_TABLENAME, input);
 
-        DataSet users = manager.getTableData(DEFAULT_TABLENAME);
+        DataSet users = manager.getTableData(TEST_TABLENAME);
         assertEquals(3, users.getRows().size());
 
         assertEquals("[id, name, password]", Arrays.toString(users.getColumns()));
@@ -65,25 +59,25 @@ public class JDBCDatabaseManagerTest {
 
     @Test
     public void testUpdateTableData() {
-        manager.delete(DEFAULT_TABLENAME, null, null);
-        String[] columns = {"id", "name", "password"};
-        DataSet input = new DataSet(columns);
+        DataSet input = new DataSet(testColumns);
         input.addRow(new Object[]{13, "Ivanov", "12345"});
-        manager.insert(DEFAULT_TABLENAME, input);
+        manager.insert(TEST_TABLENAME, input);
         String[] updatedColumns = {"name", "password"};
         String[] updatedValues = {"Jason", "OoOoOo"};
-        manager.update(DEFAULT_TABLENAME, "id", "13", updatedColumns, updatedValues);
+        manager.update(TEST_TABLENAME, "id", "13", updatedColumns, updatedValues);
 
-        DataSet users = manager.getTableData(DEFAULT_TABLENAME);
+        DataSet users = manager.getTableData(TEST_TABLENAME);
 
         assertEquals("[id, name, password]", Arrays.toString(users.getColumns()));
         assertEquals("[13, Jason, OoOoOo]", Arrays.toString(users.getRows().get(0)));
     }
 
-//    @After
-//    public void dropTable() {
-//        manager.dropTable(DEFAULT_TABLENAME);
-//    }
+    @After
+    public void dropTable() {
+        if (!doNotDrop) {
+            manager.dropTable(TEST_TABLENAME);
+        }
+    }
 
 
 }
